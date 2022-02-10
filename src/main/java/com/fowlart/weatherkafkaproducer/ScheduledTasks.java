@@ -1,5 +1,7 @@
 package com.fowlart.weatherkafkaproducer;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -30,7 +32,7 @@ public class ScheduledTasks {
                           @Value("${weather.api.location}") String weatherApiLocation,
                           @Value("${kafka.cluster.username}") String kafkaUser,
                           @Value("${kafka.cluster.key}") String kafkaKey) {
-        log.info("Using "+weatherApiLocation+" as location");
+        log.info("Using " + weatherApiLocation + " as location");
         this.weatherApiKey = weatherApiKey;
         this.weatherApiLocation = weatherApiLocation;
         this.kafkaUser = kafkaUser;
@@ -45,13 +47,11 @@ public class ScheduledTasks {
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "pkc-lq8gm.westeurope.azure.confluent.cloud:9092");
         properties.setProperty(ProducerConfig.ACKS_CONFIG, "all");
         properties.setProperty("security.protocol", "SASL_SSL");
-        String w = "org.apache.kafka.common.security.plain.PlainLoginModule required username='" + kafkaUser + "' password='" + kafkaKey + "';";
-        log.info(">>> Connection string: " + w);
-        properties.setProperty("sasl.jaas.config", w);
+        String connectionString = "org.apache.kafka.common.security.plain.PlainLoginModule required username='" + kafkaUser + "' password='" + kafkaKey + "';";
+        properties.setProperty("sasl.jaas.config", connectionString);
         properties.setProperty("sasl.mechanism", "PLAIN");
         properties.setProperty("client.dns.lookup", "use_all_dns_ips");
         properties.setProperty("session.timeout.ms", "45000");
-        //    properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group_0");
         return new KafkaProducer<>(properties);
     }
 
@@ -71,8 +71,18 @@ public class ScheduledTasks {
 
         response = client.newCall(request).execute();
         String weatherJson = response.body().string();
-        log.info(weatherJson);
-        ProducerRecord<String, String> record = new ProducerRecord<>("weather", weatherJson);
+        JsonObject jsonObject = new JsonParser().parse(weatherJson).getAsJsonObject();
+        String city = jsonObject.getAsJsonObject("location").getAsJsonPrimitive("name").getAsString();
+        String localTime = jsonObject.getAsJsonObject("location").getAsJsonPrimitive("localtime").getAsString();
+        String temp = jsonObject.getAsJsonObject("current").getAsJsonPrimitive("temp_c").getAsString();
+        String windSpeedKph = jsonObject.getAsJsonObject("current").getAsJsonPrimitive("wind_kph").getAsString();
+        JsonObject output = new JsonObject();
+        output.addProperty("city",city);
+        output.addProperty("localTime",localTime);
+        output.addProperty("temp_c",temp);
+        output.addProperty("wind_kph",windSpeedKph);
+        log.info(output.toString());
+        ProducerRecord<String, String> record = new ProducerRecord<>("weather", output.toString());
         kafkaProducer.send(record);
         kafkaProducer.flush();
     }
