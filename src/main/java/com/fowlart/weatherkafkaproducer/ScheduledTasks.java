@@ -74,8 +74,8 @@ public class ScheduledTasks {
         JsonObject jsonObject = new JsonParser().parse(weatherJson).getAsJsonObject();
         String city = jsonObject.getAsJsonObject("location").getAsJsonPrimitive("name").getAsString();
         String localTime = jsonObject.getAsJsonObject("location").getAsJsonPrimitive("localtime").getAsString();
-        String temp = jsonObject.getAsJsonObject("current").getAsJsonPrimitive("temp_c").getAsString();
-        String windSpeedKph = jsonObject.getAsJsonObject("current").getAsJsonPrimitive("wind_kph").getAsString();
+        Double temp = jsonObject.getAsJsonObject("current").getAsJsonPrimitive("temp_c").getAsDouble();
+        Double windSpeedKph = jsonObject.getAsJsonObject("current").getAsJsonPrimitive("wind_kph").getAsDouble();
         JsonObject output = new JsonObject();
         output.addProperty("city",city);
         output.addProperty("localTime",localTime);
