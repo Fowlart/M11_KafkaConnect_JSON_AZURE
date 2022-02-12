@@ -1,0 +1,63 @@
+version: '2'
+services:
+
+  connect:
+    image: confluentinc/cp-kafka-connect-base
+    hostname: connect
+    container_name: kafka-connect
+    environment:
+
+      CONNECT_BOOTSTRAP_SERVERS: pkc-lq8gm.westeurope.azure.confluent.cloud:9092
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+
+      CONNECT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: https
+      CONNECT_SECURITY_PROTOCOL: SASL_SSL
+      CONNECT_SASL_MECHANISM: PLAIN
+      CONNECT_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="U5OY7D3DEZHLRLSK" password="pWP6wZKmJOducnaK1VbKCZk9nn+KC+DwwqZSp4hY0En2t3YwtO/Io0t7EEeTXtaf";
+      CONNECT_REQUEST_TIMEOUT_MS: 20000
+      CONNECT_RETRY_BACKOFF_MS: 500
+
+      CONNECT_PRODUCER_BOOTSTRAP_SERVERS: pkc-lq8gm.westeurope.azure.confluent.cloud:9092
+      CONNECT_PRODUCER_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: https
+      CONNECT_PRODUCER_SECURITY_PROTOCOL: SASL_SSL
+      CONNECT_PRODUCER_SASL_MECHANISM: PLAIN
+      CONNECT_PRODUCER_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="U5OY7D3DEZHLRLSK" password="pWP6wZKmJOducnaK1VbKCZk9nn+KC+DwwqZSp4hY0En2t3YwtO/Io0t7EEeTXtaf";
+      CONNECT_PRODUCER_REQUEST_TIMEOUT_MS: 20000
+      CONNECT_PRODUCER_RETRY_BACKOFF_MS: 500
+
+      CONNECT_CONSUMER_BOOTSTRAP_SERVERS: pkc-lq8gm.westeurope.azure.confluent.cloud:9092
+      CONNECT_CONSUMER_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: https
+      CONNECT_CONSUMER_SECURITY_PROTOCOL: SASL_SSL
+      CONNECT_CONSUMER_SASL_MECHANISM: PLAIN
+      CONNECT_CONSUMER_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="U5OY7D3DEZHLRLSK" password="pWP6wZKmJOducnaK1VbKCZk9nn+KC+DwwqZSp4hY0En2t3YwtO/Io0t7EEeTXtaf";
+      CONNECT_CONSUMER_REQUEST_TIMEOUT_MS: 20000
+      CONNECT_CONSUMER_RETRY_BACKOFF_MS: 500
+
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+      CONNECT_STORAGE_FILE_FILENAME: /tmp/connect.offsets
+
+      CONNECT_VALUE_CONVERTER_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 52DY3HR3G72B3MDU:UDy3MlsVLwwkp35/FzKAIKngnR4/v6khrTsiH+1NzWULLoxNKs2Dg7U8FTgfyM9B
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: https://psrc-0j199.westeurope.azure.confluent.cloud
+
+      CONNECT_CONFLUENT_TOPIC_BOOTSTRAP_SERVERS: pkc-lq8gm.westeurope.azure.confluent.cloud:9092
+      CONNECT_CONFLUENT_TOPIC_SASL_JAAS_CONFIG:  org.apache.kafka.common.security.plain.PlainLoginModule required username="U5OY7D3DEZHLRLSK" password="pWP6wZKmJOducnaK1VbKCZk9nn+KC+DwwqZSp4hY0En2t3YwtO/Io0t7EEeTXtaf";
+      CONNECT_CONFLUENT_TOPIC_SECURITY_PROTOCOL: SASL_SSL
+      CONNECT_CONFLUENT_TOPIC_SASL_MECHANISM: PLAIN
+
+      # required
+      CONNECT_GROUP_ID: azure_blob_connector
+      CONNECT_CONFIG_STORAGE_TOPIC: my_config_store
+      CONNECT_OFFSET_STORAGE_TOPIC: my_offset_store
+      CONNECT_STATUS_STORAGE_TOPIC: my_status_store
+      CONNECT_REST_ADVERTISED_HOST_NAME: localhost
+
+      # exp
+      CONNECT_PLUGIN_PATH: /usr/share/confluent-hub-components/confluentinc-kafka-connect-azure-blob-storage-source-2.0.1
+
+    volumes:
+      - $PWD/confluent-hub-components/:/usr/share/confluent-hub-components/
+
+    ports:
+      - 8083:8083
