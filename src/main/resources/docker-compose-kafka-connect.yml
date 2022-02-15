@@ -53,9 +53,6 @@ services:
       CONNECT_STATUS_STORAGE_TOPIC: my_status_store
       CONNECT_REST_ADVERTISED_HOST_NAME: http://127.0.0.1
 
-      CONNECTOR_CLIENT_CONFIG_OVERRIDE_POLICY: none
-
-      # exp
       CONNECT_PLUGIN_PATH: /usr/share/confluent-hub-components/confluentinc-kafka-connect-azure-blob-storage-source-2.0.1
 
     volumes:

@@ -12,6 +12,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 @Component
+@PropertySource("classpath:application.properties")
 public class ScheduledTasks {
 
     private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
@@ -48,6 +50,7 @@ public class ScheduledTasks {
         properties.setProperty(ProducerConfig.ACKS_CONFIG, "all");
         properties.setProperty("security.protocol", "SASL_SSL");
         String connectionString = "org.apache.kafka.common.security.plain.PlainLoginModule required username='" + kafkaUser + "' password='" + kafkaKey + "';";
+        log.info("Connection string to Kafka: "+connectionString);
         properties.setProperty("sasl.jaas.config", connectionString);
         properties.setProperty("sasl.mechanism", "PLAIN");
         properties.setProperty("client.dns.lookup", "use_all_dns_ips");
@@ -67,10 +70,9 @@ public class ScheduledTasks {
                 .method("GET", null)
                 .build();
 
-        Response response = null;
-
-        response = client.newCall(request).execute();
+        Response response= client.newCall(request).execute();
         String weatherJson = response.body().string();
+        log.info("Response from weather API: "+weatherJson);
         JsonObject jsonObject = new JsonParser().parse(weatherJson).getAsJsonObject();
         String city = jsonObject.getAsJsonObject("location").getAsJsonPrimitive("name").getAsString();
         String localTime = jsonObject.getAsJsonObject("location").getAsJsonPrimitive("localtime").getAsString();
